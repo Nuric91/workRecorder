@@ -18,6 +18,9 @@ class TimerApp:
         self.root = root
         self.root.title("Timer App")
 
+        # Set a custom icon
+        self.root.iconphoto(False, tk.PhotoImage(file="custom_icon.png"))
+
         self.start_time = None
         self.timer_running = False
 
@@ -32,7 +35,7 @@ class TimerApp:
         self.timer_button.pack(pady=20)
 
         # Timer Display
-        self.timer_label = tk.Label(self.root, text="Timer: 0.0s", font=("Helvetica", 14))
+        self.timer_label = tk.Label(self.root, text="Timer: 0:00:00", font=("Helvetica", 14))
         self.timer_label.pack(pady=10)
 
         # Display recorded data in terminal
@@ -62,7 +65,7 @@ class TimerApp:
         try:
             with open(self.output_file, mode='x', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(["Category", "Type", "Recorded Time (s)"])
+                writer.writerow(["Category", "Type", "Recorded Time (h:m:s)"])
         except FileExistsError:
             pass  # File already exists
 
@@ -82,7 +85,7 @@ class TimerApp:
         self.timer_button.config(text="Stop Timer")
 
     def stop_timer(self):
-        elapsed_time = time.time() - self.start_time
+        elapsed_time = int(time.time() - self.start_time)
         self.timer_running = False
         self.timer_button.config(text="Start Timer")
         self.record_time(elapsed_time)
@@ -91,15 +94,19 @@ class TimerApp:
         category = self.category.get()
         type_ = self.type.get()
 
+        hours, remainder = divmod(elapsed_time, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        time_str = f"{hours}:{minutes:02}:{seconds:02}"
+
         with open(self.output_file, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([category, type_, round(elapsed_time, 2)])
+            writer.writerow([category, type_, time_str])
 
-        self.update_console(category, type_, elapsed_time)
+        self.update_console(category, type_, time_str)
 
-    def update_console(self, category, type_, elapsed_time):
+    def update_console(self, category, type_, time_str):
         self.console_text.config(state='normal')
-        self.console_text.insert(tk.END, f"Category: {category}, Type: {type_}, Time: {round(elapsed_time, 2)}s\n")
+        self.console_text.insert(tk.END, f"Category: {category}, Type: {type_}, Time: {time_str}\n")
         self.console_text.config(state='disabled')
 
     def show_error(self, message):
@@ -123,11 +130,11 @@ class TimerApp:
 
     def update_clock(self):
         if self.timer_running and self.start_time:
-            elapsed_time = time.time() - self.start_time
-            self.timer_label.config(text=f"Timer: {round(elapsed_time, 1)}s")
-        elif not self.timer_running:
-            self.timer_label.config(text="Timer: 0.0s" if not self.start_time else self.timer_label.cget("text"))
-        self.root.after(100, self.update_clock)
+            elapsed_time = int(time.time() - self.start_time)
+            hours, remainder = divmod(elapsed_time, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            self.timer_label.config(text=f"Timer: {hours}:{minutes:02}:{seconds:02}")
+        self.root.after(1000, self.update_clock)
 
 if __name__ == "__main__":
     root = tk.Tk()
