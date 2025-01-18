@@ -1,1 +1,4 @@
 timer_records.csv
+build/
+venv/
+workRecorder.spec

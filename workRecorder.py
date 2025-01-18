@@ -12,6 +12,7 @@ import tkinter as tk
 from tkinter import ttk
 import csv
 import time
+import os
 
 class TimerApp:
     def __init__(self, root):
@@ -19,7 +20,10 @@ class TimerApp:
         self.root.title("Timer App")
 
         # Set a custom icon
-        self.root.iconphoto(False, tk.PhotoImage(file="custom_icon.png"))
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        icon_path = os.path.join(base_path, "custom_icon.png")
+        self.root.iconphoto(False, tk.PhotoImage(file=icon_path))
+
 
         self.start_time = None
         self.timer_running = False
