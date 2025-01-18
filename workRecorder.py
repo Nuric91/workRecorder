@@ -51,6 +51,7 @@ class TimerApp:
         category_label.pack()
         category_menu = ttk.Combobox(self.root, textvariable=self.category, values=["Story Work", "Story Preparation", "No Story Work"], state="readonly")
         category_menu.pack()
+        category_menu.bind("<<ComboboxSelected>>", self.update_background_color)
 
         type_label = tk.Label(self.root, text="Choose a type:")
         type_label.pack()
@@ -108,6 +109,17 @@ class TimerApp:
         error_label.pack(pady=20)
         close_button = tk.Button(error_window, text="Close", command=error_window.destroy)
         close_button.pack()
+
+    def update_background_color(self, event=None):
+        category = self.category.get()
+        if category == "No Story Work":
+            self.root.configure(bg="red")
+        elif category == "Story Preparation":
+            self.root.configure(bg="yellow")
+        elif category == "Story Work":
+            self.root.configure(bg="green")
+        else:
+            self.root.configure(bg="white")
 
     def update_clock(self):
         if self.timer_running and self.start_time:
