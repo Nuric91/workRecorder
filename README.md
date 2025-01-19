@@ -21,6 +21,8 @@ The **Work Recorder** is a simple application designed to help users record time
   - Category
   - Type
   - Recorded Time (h:m:s)
+  - Date and Time of the recording
+  - Weekday of the recording
 
 ## Executable Location
 The prebuilt executable can be found in the `dist` directory. Double-click the `.exe` file to launch the application.
