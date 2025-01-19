@@ -13,6 +13,8 @@ from tkinter import ttk
 import csv
 import time
 import os
+import sys
+from datetime import datetime
 
 class TimerApp:
     def __init__(self, root):
@@ -23,7 +25,6 @@ class TimerApp:
         base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
         icon_path = os.path.join(base_path, "custom_icon.png")
         self.root.iconphoto(False, tk.PhotoImage(file=icon_path))
-
 
         self.start_time = None
         self.timer_running = False
@@ -69,7 +70,7 @@ class TimerApp:
         try:
             with open(self.output_file, mode='x', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(["Category", "Type", "Recorded Time (h:m:s)"])
+                writer.writerow(["Category", "Type", "Recorded Time (h:m:s)", "Date and Time", "Weekday"])
         except FileExistsError:
             pass  # File already exists
 
@@ -102,15 +103,20 @@ class TimerApp:
         minutes, seconds = divmod(remainder, 60)
         time_str = f"{hours}:{minutes:02}:{seconds:02}"
 
+        # Add date, time, and weekday
+        now = datetime.now()
+        current_datetime = now.strftime("%Y-%m-%d %H:%M:%S")
+        weekday = now.strftime("%A")
+
         with open(self.output_file, mode='a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([category, type_, time_str])
+            writer.writerow([category, type_, time_str, current_datetime, weekday])
 
-        self.update_console(category, type_, time_str)
+        self.update_console(category, type_, time_str, current_datetime, weekday)
 
-    def update_console(self, category, type_, time_str):
+    def update_console(self, category, type_, time_str, current_datetime, weekday):
         self.console_text.config(state='normal')
-        self.console_text.insert(tk.END, f"Category: {category}, Type: {type_}, Time: {time_str}\n")
+        self.console_text.insert(tk.END, f"Category: {category}, Type: {type_}, Time: {time_str}, Date and Time: {current_datetime}, Weekday: {weekday}\n")
         self.console_text.config(state='disabled')
 
     def show_error(self, message):
